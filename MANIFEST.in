@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include amazon_sp_erpnext *.css
+recursive-include amazon_sp_erpnext *.csv
+recursive-include amazon_sp_erpnext *.html
+recursive-include amazon_sp_erpnext *.ico
+recursive-include amazon_sp_erpnext *.js
+recursive-include amazon_sp_erpnext *.json
+recursive-include amazon_sp_erpnext *.md
+recursive-include amazon_sp_erpnext *.png
+recursive-include amazon_sp_erpnext *.py
+recursive-include amazon_sp_erpnext *.svg
+recursive-include amazon_sp_erpnext *.txt
+recursive-exclude amazon_sp_erpnext *.pyc
