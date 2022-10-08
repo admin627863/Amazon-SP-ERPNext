@@ -25,6 +25,7 @@
   "parent_item_group",
   "price_list",
   "column_break_3",
+  "sales_invoice_series",
   "customer_group",
   "territory",
   "customer_type",
@@ -296,12 +297,17 @@
    "fieldname": "amazon_item_field_in_erpnext",
    "fieldtype": "Select",
    "label": "Amazon Item field in ERPNext",
-   "options": "Amazon ASIN\nAmazon Seller SKU",
+   "options": "Amazon ASIN\nAmazon Seller SKU\nERPNext ItemCode",
    "reqd": 1
+  },
+  {
+   "fieldname": "sales_invoice_series",
+   "fieldtype": "Data",
+   "label": "Sales Invoice Series"
   }
  ],
  "links": [],
- "modified": "2022-10-03 12:00:00.669296",
+ "modified": "2022-10-08 12:24:03.755260",
  "modified_by": "Administrator",
  "module": "Amazon SP ERPNext",
  "name": "Amazon SP Settings",
