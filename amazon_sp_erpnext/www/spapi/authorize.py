@@ -65,7 +65,7 @@ def oauth_redirect(sp_api_website_workflow_state=None):
             "grant_type": "authorization_code",
             "code": args.spapi_oauth_code,
             "client_id": sp_api_settings.client_id,
-            "client_secret": sp_api_settings.client_secret,
+            "client_secret": sp_api_settings.get_password("client_secret"),
         },
     )
 
