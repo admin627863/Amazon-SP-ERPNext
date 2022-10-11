@@ -54,6 +54,16 @@ class AmazonSPSettings(Document):
         if self.is_active == 1:
             get_orders(amz_setting_name=self.name, created_after=self.after_date)
 
+    def get_credentials(self):
+        return {
+            "lwa_app_id": self.client_id,
+            "lwa_client_secret": self.get_password("client_secret"),
+            "aws_access_key": self.aws_access_key,
+            "aws_secret_key": self.get_password("aws_secret_key"),
+            "role_arn": self.iam_arn,
+            "refresh_token": self.refresh_token,
+        }
+
 
 # Called via a hook in every hour.
 def schedule_get_order_details():
