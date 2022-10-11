@@ -15,7 +15,7 @@ no_cache = 1
 
 
 def get_context(context):
-    context.brand_html = "Amazon FBA Erpnext"
+    context.brand_html = "Amazon SP Erpnext"
 
 
 @frappe.whitelist(allow_guest=True)
@@ -74,12 +74,15 @@ def oauth_redirect(sp_api_website_workflow_state=None):
     frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
 
     frappe.db.set_value(
-        "Amazon FBA Settings", None, "refresh_token", args.get("refresh_token")
+        "Amazon SP Settings",
+        get_default_company(),
+        "refresh_token",
+        args.get("refresh_token"),
     )
     frappe.db.commit()
 
     frappe.respond_as_web_page(
         _("Authorization complete"),
-        _("Amazon FBA ERPNext has been authorized successfully. Thank you."),
+        _("Amazon SP ERPNext has been authorized successfully. Thank you."),
         indicator_color="green",
     )
