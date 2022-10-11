@@ -1,0 +1,30 @@
+{% extends "templates/web.html" %} {% block page_content %}
+<div class="text-center login-content container page-card">
+  <form
+    role="form form-signin"
+    method="POST"
+    action="/api/method/amazon_sp_erpnext.www.spapi.authorize.redirect_to_amz"
+  >
+    <h3 class="form-signin-heading mb-4">{{ _("") }}</h3>
+
+    <div class="text-center sign-up-message">
+      {{ _("Please authorise the
+      <strong> Amazon FBA Erpnext </strong> application by Greycube Technologies
+      to access your Seller Central") }}
+    </div>
+    <!-- <h2>{{ frappe.session.csrf_token }}</h2> -->
+    <input
+      type="hidden"
+      name="csrf_token"
+      value="{{ frappe.session.csrf_token }}"
+    />
+
+    <button
+      class="btn btn-primary mt-2 btn-sm btn-complete-signup w-100"
+      type="submit"
+    >
+      {{ _("Authorize") }}
+    </button>
+  </form>
+</div>
+{% endblock %}
