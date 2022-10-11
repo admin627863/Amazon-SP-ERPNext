@@ -60,36 +60,33 @@ def oauth_redirect(sp_api_website_workflow_state=None):
     #     f"login_token:{sp_api_website_workflow_state}", expires=True
     # )
 
-    sp_api_settings = frappe.get_doc("Amazon SP Settings", get_default_company())
-    frappe.log_error(title="Amazon SP Settings", message=sp_api_settings.as_json())
+    # sp_api_settings = frappe.get_doc("Amazon SP Settings", get_default_company())
+    # frappe.log_error(title="Amazon SP Settings", message=sp_api_settings.as_json())
 
     response = requests.post(
-        sp_api_settings.oauth_token_url,
+        "https://api.amazon.com/auth/o2/token",
         data={
             "grant_type": "authorization_code",
             "code": args.spapi_oauth_code,
-            "client_id": sp_api_settings.client_id,
-            "client_secret": sp_api_settings.get_password("client_secret"),
+            "client_id": frappe.conf.client_id,
+            "client_secret": frappe.conf.client_secret,
         },
     )
 
     args = response.json()
 
-    # frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
+    frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
 
-    # frappe.db.set_value(
-    #     "Amazon SP Settings",
-    #     get_default_company(),
-    #     "refresh_token",
-    #     args.get("refresh_token"),
-    # )
-    # frappe.db.commit()
+    frappe.db.set_value(
+        "Amazon SP Settings",
+        get_default_company(),
+        "refresh_token",
+        args.get("refresh_token"),
+    )
+    frappe.db.commit()
 
     frappe.respond_as_web_page(
         _("Authorization complete"),
-        _(
-            "Amazon SP ERPNext has been authorized successfully. Thank you.%s"
-            % json.dumps(args)
-        ),
+        _("Amazon SP ERPNext has been authorized successfully. Thank you."),
         indicator_color="green",
     )
