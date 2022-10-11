@@ -7,6 +7,7 @@ frappe.ui.form.on("Amazon SP Settings", {
       "/api/method/amazon_sp_erpnext.amazon_sp_erpnext.controllers.report_controller.fetch_report",
       {
         report_type: frm.doc.report_type,
+        amz_settings_name: frm.doc.name,
       }
     );
   },
