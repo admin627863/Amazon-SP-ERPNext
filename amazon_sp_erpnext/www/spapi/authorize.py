@@ -75,7 +75,7 @@ def oauth_redirect(sp_api_website_workflow_state=None):
 
     args = response.json()
 
-    frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
+    # frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
 
     # frappe.db.set_value(
     #     "Amazon SP Settings",
@@ -83,7 +83,7 @@ def oauth_redirect(sp_api_website_workflow_state=None):
     #     "refresh_token",
     #     args.get("refresh_token"),
     # )
-    frappe.db.commit()
+    # frappe.db.commit()
 
     frappe.respond_as_web_page(
         _("Authorization complete"),
