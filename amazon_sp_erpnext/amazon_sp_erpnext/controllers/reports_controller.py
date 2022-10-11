@@ -7,9 +7,6 @@ from sp_api.base import Marketplaces, ReportType, ProcessingStatus, Granularity
 import time
 import io
 from datetime import datetime
-from amazon_sp_erpnext.amazon_sp_erpnext.doctype.amazon_sp_settings.amazon_repository import (
-    AmazonRepository,
-)
 
 
 @frappe.whitelist()
