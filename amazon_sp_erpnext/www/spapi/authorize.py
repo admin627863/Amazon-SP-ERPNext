@@ -61,9 +61,7 @@ def oauth_redirect(sp_api_website_workflow_state=None):
     # )
 
     sp_api_settings = frappe.get_doc("Amazon SP Settings", get_default_company())
-    frappe.log_error(
-        title="Amazon Oauth Response", message=json.dumps(sp_api_settings.as_dict())
-    )
+    frappe.log_error(title="Amazon Oauth Response", message=sp_api_settings.as_json())
 
     response = requests.post(
         sp_api_settings.oauth_token_url,
