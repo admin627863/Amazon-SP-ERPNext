@@ -92,13 +92,6 @@
    "unique": 1
   },
   {
-   "fieldname": "client_secret",
-   "fieldtype": "Password",
-   "in_list_view": 1,
-   "label": "Client Secret",
-   "reqd": 1
-  },
-  {
    "fieldname": "section_break_1",
    "fieldtype": "Section Break",
    "label": "Developer"
@@ -109,12 +102,6 @@
    "label": "AWS Access Key",
    "reqd": 1,
    "unique": 1
-  },
-  {
-   "fieldname": "aws_secret_key",
-   "fieldtype": "Password",
-   "label": "AWS Secret Key",
-   "reqd": 1
   },
   {
    "fieldname": "column_break_2",
@@ -323,10 +310,20 @@
    "fieldname": "fetch_report",
    "fieldtype": "Button",
    "label": "Fetch Report"
+  },
+  {
+   "fieldname": "client_secret",
+   "fieldtype": "Password",
+   "label": "Client Secret"
+  },
+  {
+   "fieldname": "aws_secret_key",
+   "fieldtype": "Password",
+   "label": "AWS Secret Key"
   }
  ],
  "links": [],
- "modified": "2022-10-11 12:02:37.291978",
+ "modified": "2022-10-11 14:07:33.881037",
  "modified_by": "Administrator",
  "module": "Amazon SP ERPNext",
  "name": "Amazon SP Settings",

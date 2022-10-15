@@ -5,3 +5,5 @@
 tags
 amazon_sp_erpnext/docs/current
 node_modules/
+dist
+__pycache__

@@ -1,0 +1,106 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-10-12 14:03:08.668825",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "itm_sb",
+  "amazon_item_field",
+  "cb_1",
+  "erpnext_item_field",
+  "ship_sb",
+  "shipping_item",
+  "cb_2",
+  "amazon_customer_for_b2c"
+ ],
+ "fields": [
+  {
+   "fieldname": "itm_sb",
+   "fieldtype": "Section Break",
+   "label": "Item Mapping"
+  },
+  {
+   "fieldname": "amazon_item_field",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Amazon Item Field ",
+   "options": "ASIN\nSeller SKU",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "erpnext_item_field",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "ERPNext Item Field",
+   "options": "Item Code\nAmazon ASIN\nAmazon Seller SKU",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ship_sb",
+   "fieldtype": "Section Break",
+   "label": "Other"
+  },
+  {
+   "fieldname": "shipping_item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Shipping Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "cb_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "amazon_customer_for_b2c",
+   "fieldtype": "Link",
+   "label": "Amazon Customer for B2C",
+   "options": "Customer"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2022-10-12 14:23:48.145443",
+ "modified_by": "Administrator",
+ "module": "Amazon SP ERPNext",
+ "name": "Amazon SP Common Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "All",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Item Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

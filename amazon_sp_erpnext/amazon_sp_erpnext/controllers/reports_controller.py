@@ -67,3 +67,4 @@ def fetch_report(report_type, amz_settings_name):
         ).insert()
 
         frappe.db.commit()
+

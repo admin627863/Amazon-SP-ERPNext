@@ -87,6 +87,6 @@ def oauth_redirect(sp_api_website_workflow_state=None):
 
     frappe.respond_as_web_page(
         _("Authorization complete"),
-        _("Amazon SP ERPNext has been authorized successfully. Thank you."),
+        _("Amazon SP ERPNext has been authorized successfully. Thank you.",
         indicator_color="green",
     )
