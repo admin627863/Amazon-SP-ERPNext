@@ -19,6 +19,12 @@ logger = frappe.logger("amazon_sp_erpnext", allow_site=frappe.local.site)
 
 class AmazonRepositoryExtn(AmazonRepository):
     def get_orders(self, created_after=None):
+        return self._get_orders(created_after)
+
+    def _get_orders(self, created_after):
+        """
+        Get Orders from Amazom SP SPI and create log entry for each order."""
+
         if not created_after:
             created_after = frappe.db.get_value(
                 "Amazon SP Settings", self.amz_setting.name, "after_date"
@@ -26,11 +32,7 @@ class AmazonRepositoryExtn(AmazonRepository):
             created_after = datetime.combine(
                 created_after, datetime.min.time()
             ).isoformat()
-        return self._get_orders(created_after)
 
-    def _get_orders(self, created_after):
-        """
-        Get Orders from Amazom SP SPI and create log entry for each order."""
         orders = self.get_orders_instance()
         order_statuses = [
             "Shipped",
@@ -56,8 +58,6 @@ class AmazonRepositoryExtn(AmazonRepository):
 
         amazon_orders = []
 
-        logger.debug()
-
         # frappe.log_error("Amazon SP API getOrders Response", orders_payload)
         logger.debug(orders_payload)
 
@@ -78,6 +78,7 @@ class AmazonRepositoryExtn(AmazonRepository):
                 sp_api_method=orders.get_orders,
                 created_after=created_after,
                 next_token=next_token,
+                max_results=50,
             )
             logger.debug(orders_payload)
 
@@ -200,14 +201,15 @@ class AmazonRepositoryExtn(AmazonRepository):
         return sales_invoice.name
 
 
-def make_order_log():
+def make_order_log(created_after=None):
     """Scheduled Job to run every 5 minutes or so to sync amazon orders"""
-    import ast
+    # import ast
 
-    response = ast.literal_eval(frappe.get_doc("Error Log", "373eaa88b2").get("error"))
-    orders = response.get("Orders") or []
+    # response = ast.literal_eval(frappe.get_doc("Error Log", "373eaa88b2").get("error"))
+    # orders = response.get("Orders") or []
 
-    # orders = self._get_orders()
+    amz = AmazonRepositoryExtn("CARMEL ORGANICS PRIVATE LIMITED")
+    orders = amz._get_orders(created_after)
     for d in orders:
         frappe.get_doc(
             {

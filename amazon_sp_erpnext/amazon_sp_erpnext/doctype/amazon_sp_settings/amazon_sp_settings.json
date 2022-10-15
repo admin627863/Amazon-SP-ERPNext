@@ -1,348 +1,367 @@
 {
- "actions": [],
- "autoname": "field:company",
- "creation": "2022-10-02 16:03:29.514729",
- "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
-  "is_active",
-  "section_break_4",
-  "iam_arn",
-  "refresh_token",
-  "column_break_1",
-  "client_id",
-  "client_secret",
-  "section_break_1",
-  "aws_access_key",
-  "aws_secret_key",
-  "column_break_2",
-  "country",
-  "section_break_2",
-  "company",
-  "amazon_item_field_in_erpnext",
-  "warehouse",
-  "parent_item_group",
-  "price_list",
-  "column_break_3",
-  "sales_invoice_series",
-  "customer_group",
-  "territory",
-  "customer_type",
-  "market_place_account_group",
-  "section_break_3",
-  "after_date",
-  "taxes_charges",
-  "sync_products",
-  "sync_orders",
-  "column_break_4",
-  "enable_sync",
-  "max_retry_limit",
-  "is_old_data_migrated",
-  "oauth_section",
-  "seller_central_url",
-  "sandbox_url",
-  "oauth_token_url",
-  "column_break_5",
-  "oauth_path",
-  "oauth_redirect_uri",
-  "application_id",
-  "amazon_fulfilment_reports_section",
-  "report_type",
-  "fetch_report"
- ],
- "fields": [
-  {
-   "default": "0",
-   "fieldname": "is_active",
-   "fieldtype": "Check",
-   "in_list_view": 1,
-   "in_preview": 1,
-   "in_standard_filter": 1,
-   "label": "Is Active"
-  },
-  {
-   "fieldname": "section_break_4",
-   "fieldtype": "Section Break",
-   "label": "Application"
-  },
-  {
-   "fieldname": "iam_arn",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "IAM ARN",
-   "reqd": 1
-  },
-  {
-   "fieldname": "refresh_token",
-   "fieldtype": "Text",
-   "label": "Refresh Token",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_1",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "client_id",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Client ID",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "section_break_1",
-   "fieldtype": "Section Break",
-   "label": "Developer"
-  },
-  {
-   "fieldname": "aws_access_key",
-   "fieldtype": "Data",
-   "label": "AWS Access Key",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "column_break_2",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "country",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Country",
-   "options": "\nCA\nUS\nMX\nBR\nES\nGB\nFR\nNL\nDE\nIT\nSE\nPL\nEG\nTR\nSA\nAE\nIN\nSG\nAU\nJP",
-   "reqd": 1
-  },
-  {
-   "fieldname": "section_break_2",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Company",
-   "options": "Company",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "warehouse",
-   "fieldtype": "Link",
-   "label": "Warehouse",
-   "options": "Warehouse",
-   "reqd": 1
-  },
-  {
-   "fieldname": "parent_item_group",
-   "fieldtype": "Link",
-   "label": "Parent Item Group",
-   "options": "Item Group",
-   "reqd": 1
-  },
-  {
-   "fieldname": "price_list",
-   "fieldtype": "Link",
-   "label": "Price List",
-   "options": "Price List",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_3",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "customer_group",
-   "fieldtype": "Link",
-   "label": "Customer Group",
-   "options": "Customer Group",
-   "reqd": 1
-  },
-  {
-   "fieldname": "territory",
-   "fieldtype": "Link",
-   "label": "Territory",
-   "options": "Territory",
-   "reqd": 1
-  },
-  {
-   "fieldname": "customer_type",
-   "fieldtype": "Select",
-   "label": "Customer Type",
-   "options": "Individual\nCompany",
-   "reqd": 1
-  },
-  {
-   "fieldname": "market_place_account_group",
-   "fieldtype": "Link",
-   "label": "Market Place Account Group",
-   "options": "Account",
-   "reqd": 1
-  },
-  {
-   "fieldname": "section_break_3",
-   "fieldtype": "Section Break"
-  },
-  {
-   "description": "Amazon will synch data updated after this date",
-   "fieldname": "after_date",
-   "fieldtype": "Date",
-   "label": "After Date",
-   "reqd": 1
-  },
-  {
-   "default": "0",
-   "description": "Get financial breakup of Taxes and charges data by Amazon ",
-   "fieldname": "taxes_charges",
-   "fieldtype": "Check",
-   "label": "Sync Taxes and Charges"
-  },
-  {
-   "description": "Always sync your products from Amazon SP-API before synching the Orders details",
-   "fieldname": "sync_products",
-   "fieldtype": "Button",
-   "label": "Sync Products",
-   "options": "get_products_details"
-  },
-  {
-   "description": "Click this button to pull your Sales Order data from Amazon SP-API.",
-   "fieldname": "sync_orders",
-   "fieldtype": "Button",
-   "label": "Sync Orders",
-   "options": "get_order_details"
-  },
-  {
-   "fieldname": "column_break_4",
-   "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "description": "Check this to enable a scheduled Daily synchronization routine via scheduler",
-   "fieldname": "enable_sync",
-   "fieldtype": "Check",
-   "label": "Enable Scheduled Sync"
-  },
-  {
-   "default": "3",
-   "fieldname": "max_retry_limit",
-   "fieldtype": "Int",
-   "label": "Max Retry Limit",
-   "non_negative": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "is_old_data_migrated",
-   "fieldtype": "Check",
-   "hidden": 1,
-   "label": "Is old data migrated",
-   "print_hide": 1,
-   "read_only": 1,
-   "report_hide": 1
-  },
-  {
-   "fieldname": "oauth_section",
-   "fieldtype": "Section Break",
-   "label": "OAuth"
-  },
-  {
-   "fieldname": "sandbox_url",
-   "fieldtype": "Data",
-   "label": "Sandbox Url"
-  },
-  {
-   "fieldname": "oauth_token_url",
-   "fieldtype": "Data",
-   "label": "Oauth Token Url"
-  },
-  {
-   "fieldname": "oauth_path",
-   "fieldtype": "Data",
-   "label": "Oauth Path"
-  },
-  {
-   "fieldname": "oauth_redirect_uri",
-   "fieldtype": "Data",
-   "label": "Oauth Redirect Uri"
-  },
-  {
-   "fieldname": "column_break_5",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "application_id",
-   "fieldtype": "Data",
-   "label": "Application Id"
-  },
-  {
-   "fieldname": "seller_central_url",
-   "fieldtype": "Data",
-   "label": "Seller Central Url"
-  },
-  {
-   "default": "SellerSKU",
-   "fieldname": "amazon_item_field_in_erpnext",
-   "fieldtype": "Select",
-   "label": "Amazon Item field in ERPNext",
-   "options": "ASIN\nSellerSKU",
-   "reqd": 1
-  },
-  {
-   "fieldname": "sales_invoice_series",
-   "fieldtype": "Data",
-   "label": "Sales Invoice Series"
-  },
-  {
-   "fieldname": "amazon_fulfilment_reports_section",
-   "fieldtype": "Section Break",
-   "label": "Amazon Fulfilment Reports"
-  },
-  {
-   "fieldname": "report_type",
-   "fieldtype": "Select",
-   "label": "Report Type",
-   "options": "GET_LEDGER_SUMMARY_VIEW_DATA\nGET_LEDGER_DETAIL_VIEW_DATA\nGET_FBA_MYI_ALL_INVENTORY_DATA\nGET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL\nGET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL\nGET_FLAT_FILE_ORDER_REPORT_DATA_SHIPPING"
-  },
-  {
-   "fieldname": "fetch_report",
-   "fieldtype": "Button",
-   "label": "Fetch Report"
-  },
-  {
-   "fieldname": "client_secret",
-   "fieldtype": "Password",
-   "label": "Client Secret"
-  },
-  {
-   "fieldname": "aws_secret_key",
-   "fieldtype": "Password",
-   "label": "AWS Secret Key"
-  }
- ],
- "links": [],
- "modified": "2022-10-11 14:07:33.881037",
- "modified_by": "Administrator",
- "module": "Amazon SP ERPNext",
- "name": "Amazon SP Settings",
- "naming_rule": "By fieldname",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "print": 1,
-   "read": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": [],
- "track_changes": 1
+  "actions": [],
+  "autoname": "field:company",
+  "creation": "2022-10-02 16:03:29.514729",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "section_break_3",
+    "after_datetime",
+    "inventory_ledger",
+    "after_date",
+    "taxes_charges",
+    "sync_products",
+    "sync_orders",
+    "column_break_4",
+    "enable_sync",
+    "max_retry_limit",
+    "is_old_data_migrated",
+    "section_break_4",
+    "is_active",
+    "iam_arn",
+    "refresh_token",
+    "column_break_1",
+    "client_id",
+    "client_secret",
+    "section_break_1",
+    "aws_access_key",
+    "aws_secret_key",
+    "column_break_2",
+    "country",
+    "section_break_2",
+    "company",
+    "amazon_item_field_in_erpnext",
+    "warehouse",
+    "parent_item_group",
+    "price_list",
+    "column_break_3",
+    "sales_invoice_series",
+    "customer_group",
+    "territory",
+    "customer_type",
+    "market_place_account_group",
+    "oauth_section",
+    "seller_central_url",
+    "sandbox_url",
+    "oauth_token_url",
+    "column_break_5",
+    "oauth_path",
+    "oauth_redirect_uri",
+    "application_id",
+    "amazon_fulfilment_reports_section",
+    "report_type",
+    "fetch_report"
+  ],
+  "fields": [
+    {
+      "default": "0",
+      "fieldname": "is_active",
+      "fieldtype": "Check",
+      "in_list_view": 1,
+      "in_preview": 1,
+      "in_standard_filter": 1,
+      "label": "Is Active"
+    },
+    {
+      "fieldname": "section_break_4",
+      "fieldtype": "Section Break",
+      "label": "Application"
+    },
+    {
+      "fieldname": "iam_arn",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "IAM ARN",
+      "reqd": 1
+    },
+    {
+      "fieldname": "refresh_token",
+      "fieldtype": "Text",
+      "label": "Refresh Token",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "client_id",
+      "fieldtype": "Data",
+      "in_list_view": 1,
+      "label": "Client ID",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "client_secret",
+      "fieldtype": "Password",
+      "in_list_view": 1,
+      "label": "Client Secret",
+      "reqd": 1
+    },
+    {
+      "fieldname": "section_break_1",
+      "fieldtype": "Section Break",
+      "label": "Developer"
+    },
+    {
+      "fieldname": "aws_access_key",
+      "fieldtype": "Data",
+      "label": "AWS Access Key",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "aws_secret_key",
+      "fieldtype": "Password",
+      "label": "AWS Secret Key",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_2",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "country",
+      "fieldtype": "Select",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Country",
+      "options": "\nCA\nUS\nMX\nBR\nES\nGB\nFR\nNL\nDE\nIT\nSE\nPL\nEG\nTR\nSA\nAE\nIN\nSG\nAU\nJP",
+      "reqd": 1
+    },
+    {
+      "fieldname": "section_break_2",
+      "fieldtype": "Section Break"
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "in_list_view": 1,
+      "in_standard_filter": 1,
+      "label": "Company",
+      "options": "Company",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "warehouse",
+      "fieldtype": "Link",
+      "label": "Warehouse",
+      "options": "Warehouse",
+      "reqd": 1
+    },
+    {
+      "fieldname": "parent_item_group",
+      "fieldtype": "Link",
+      "label": "Parent Item Group",
+      "options": "Item Group",
+      "reqd": 1
+    },
+    {
+      "fieldname": "price_list",
+      "fieldtype": "Link",
+      "label": "Price List",
+      "options": "Price List",
+      "reqd": 1
+    },
+    {
+      "fieldname": "column_break_3",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "customer_group",
+      "fieldtype": "Link",
+      "label": "Customer Group",
+      "options": "Customer Group",
+      "reqd": 1
+    },
+    {
+      "fieldname": "territory",
+      "fieldtype": "Link",
+      "label": "Territory",
+      "options": "Territory",
+      "reqd": 1
+    },
+    {
+      "fieldname": "customer_type",
+      "fieldtype": "Select",
+      "label": "Customer Type",
+      "options": "Individual\nCompany",
+      "reqd": 1
+    },
+    {
+      "fieldname": "market_place_account_group",
+      "fieldtype": "Link",
+      "label": "Market Place Account Group",
+      "options": "Account",
+      "reqd": 1
+    },
+    {
+      "fieldname": "section_break_3",
+      "fieldtype": "Section Break",
+      "label": "Sync With Seller Central"
+    },
+    {
+      "description": "Amazon will synch data updated after this date",
+      "fieldname": "after_date",
+      "fieldtype": "Date",
+      "hidden": 1,
+      "label": "After Date"
+    },
+    {
+      "default": "0",
+      "description": "Get financial breakup of Taxes and charges data by Amazon ",
+      "fieldname": "taxes_charges",
+      "fieldtype": "Check",
+      "hidden": 1,
+      "label": "Sync Taxes and Charges"
+    },
+    {
+      "description": "Always sync your products from Amazon SP-API before synching the Orders details",
+      "fieldname": "sync_products",
+      "fieldtype": "Button",
+      "hidden": 1,
+      "label": "Sync Products",
+      "options": "get_products_details"
+    },
+    {
+      "description": "Click this button to pull your Sales Order data from Amazon SP-API.",
+      "fieldname": "sync_orders",
+      "fieldtype": "Button",
+      "hidden": 1,
+      "label": "Sync Orders",
+      "options": "get_order_details"
+    },
+    {
+      "fieldname": "column_break_4",
+      "fieldtype": "Column Break"
+    },
+    {
+      "default": "0",
+      "description": "Check this to enable a scheduled Daily synchronization routine via scheduler",
+      "fieldname": "enable_sync",
+      "fieldtype": "Check",
+      "label": "Enable Scheduled Sync"
+    },
+    {
+      "default": "3",
+      "fieldname": "max_retry_limit",
+      "fieldtype": "Int",
+      "label": "Max Retry Limit",
+      "non_negative": 1
+    },
+    {
+      "default": "0",
+      "fieldname": "is_old_data_migrated",
+      "fieldtype": "Check",
+      "hidden": 1,
+      "label": "Is old data migrated",
+      "print_hide": 1,
+      "read_only": 1,
+      "report_hide": 1
+    },
+    {
+      "fieldname": "oauth_section",
+      "fieldtype": "Section Break",
+      "label": "OAuth"
+    },
+    {
+      "fieldname": "sandbox_url",
+      "fieldtype": "Data",
+      "label": "Sandbox Url"
+    },
+    {
+      "fieldname": "oauth_token_url",
+      "fieldtype": "Data",
+      "label": "Oauth Token Url"
+    },
+    {
+      "fieldname": "oauth_path",
+      "fieldtype": "Data",
+      "label": "Oauth Path"
+    },
+    {
+      "fieldname": "oauth_redirect_uri",
+      "fieldtype": "Data",
+      "label": "Oauth Redirect Uri"
+    },
+    {
+      "fieldname": "column_break_5",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "application_id",
+      "fieldtype": "Data",
+      "label": "Application Id"
+    },
+    {
+      "fieldname": "seller_central_url",
+      "fieldtype": "Data",
+      "label": "Seller Central Url"
+    },
+    {
+      "default": "SellerSKU",
+      "fieldname": "amazon_item_field_in_erpnext",
+      "fieldtype": "Select",
+      "label": "Amazon Item field in ERPNext",
+      "options": "ASIN\nSellerSKU",
+      "reqd": 1
+    },
+    {
+      "fieldname": "sales_invoice_series",
+      "fieldtype": "Data",
+      "label": "Sales Invoice Series"
+    },
+    {
+      "fieldname": "amazon_fulfilment_reports_section",
+      "fieldtype": "Section Break",
+      "label": "Amazon Fulfilment Reports"
+    },
+    {
+      "fieldname": "report_type",
+      "fieldtype": "Select",
+      "label": "Report Type",
+      "options": "GET_LEDGER_SUMMARY_VIEW_DATA\nGET_LEDGER_DETAIL_VIEW_DATA\nGET_FBA_MYI_ALL_INVENTORY_DATA\nGET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL\nGET_FLAT_FILE_ALL_ORDERS_DATA_BY_LAST_UPDATE_GENERAL\nGET_FLAT_FILE_ORDER_REPORT_DATA_SHIPPING"
+    },
+    {
+      "fieldname": "fetch_report",
+      "fieldtype": "Button",
+      "label": "Fetch Report"
+    },
+    {
+      "fieldname": "after_datetime",
+      "fieldtype": "Datetime",
+      "label": "After DateTime"
+    },
+    {
+      "fieldname": "inventory_ledger",
+      "fieldtype": "Attach",
+      "label": "Inventory Ledger"
+    }
+  ],
+  "links": [],
+  "modified": "2022-10-12 09:55:18.809744",
+  "modified_by": "Administrator",
+  "module": "Amazon SP ERPNext",
+  "name": "Amazon SP Settings",
+  "naming_rule": "By fieldname",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "print": 1,
+      "read": 1,
+      "role": "System Manager",
+      "share": 1,
+      "write": 1
+    }
+  ],
+  "sort_field": "modified",
+  "sort_order": "DESC",
+  "states": [],
+  "track_changes": 1
 }
