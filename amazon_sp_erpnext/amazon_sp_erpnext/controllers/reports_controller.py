@@ -11,20 +11,19 @@ from datetime import datetime
 
 @frappe.whitelist()
 def fetch_report(report_type, amz_settings_name):
-    credentials = frappe.get_doc(
-        "Amazon SP Settings", amz_settings_name
-    ).get_credentials()
+    settings = frappe.get_doc("Amazon SP Settings", amz_settings_name)
+    credentials = settings.get_credentials()
     res = Reports(credentials=credentials, marketplace=Marketplaces.IN)
 
     data = res.create_report(
         reportType=report_type,
-        dataStartTime="2022-10-06T20:11:24.000Z",
-        dataEndTime="2022-10-10T03:56:02.244Z",
-        reportOptions={
-            "aggregateByLocation": "FC",
-            "aggregatedByTimePeriod": "MONTHLY",
-            "eventType": "Shipments",
-        },
+        dataStartTime=settings.after_datetime,  # , "2022-10-06T20:11:24.000Z",
+        dataEndTime=settings.till_datetime,  # "2022-10-10T03:56:02.244Z",
+        # reportOptions={
+        #     "aggregateByLocation": "FC",
+        #     "aggregatedByTimePeriod": "MONTHLY",
+        #     "eventType": "Shipments",
+        # },
     )
 
     report_id = data.payload["reportId"]
@@ -46,25 +45,25 @@ def fetch_report(report_type, amz_settings_name):
     ]:
         print("Report failed!")
         frappe.throw(data.payload)
-    else:
-        print("Success:")
-        print(data.payload)
+        return
 
-        report = io.BytesIO()
-        res.get_report_document(
-            data.payload["reportDocumentId"],
-            decrypt=True,
-            file=report,
-        )
+    print("Success:")
+    print(data.payload)
 
-        frappe.get_doc(
-            {
-                "doctype": "File",
-                "file_name": f"{report_type}_response_{datetime.now()}.csv",
-                "content": report.getvalue(),
-                "is_private": True,
-            }
-        ).insert()
+    report = io.BytesIO()
+    res.get_report_document(
+        data.payload["reportDocumentId"],
+        decrypt=True,
+        file=report,
+    )
 
-        frappe.db.commit()
+    frappe.get_doc(
+        {
+            "doctype": "File",
+            "file_name": f"{report_type}_response_{datetime.now()}.csv",
+            "content": report.getvalue(),
+            "is_private": True,
+        }
+    ).insert()
 
+    frappe.db.commit()

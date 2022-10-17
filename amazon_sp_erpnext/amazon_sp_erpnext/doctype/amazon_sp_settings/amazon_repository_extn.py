@@ -144,62 +144,6 @@ class AmazonRepositoryExtn(AmazonRepository):
 
         return final_order_items
 
-    def create_sales_invoice(self, amazon_order, submit=False):
-
-        order_id = amazon_order.get("AmazonOrderId")
-        # check for duplicate
-        if frappe.db.exists("Sales Invoice", {"amazon_order_id_cf": order_id}):
-            pass
-            # return
-
-        customer_name = self.create_customer(amazon_order)
-        self.create_address(amazon_order, customer_name)
-        items = [d for d in self.get_order_items(order_id) if d.get("qty")]
-
-        if not items:
-            return
-
-        delivery_date = dateutil.parser.parse(
-            amazon_order.get("LatestShipDate")
-        ).strftime("%Y-%m-%d")
-
-        transaction_date = dateutil.parser.parse(
-            amazon_order.get("PurchaseDate")
-        ).strftime("%Y-%m-%d")
-
-        naming_series = frappe.db.get_value(
-            "Amazon SP Settings", self.amz_setting.name, "sales_invoice_series"
-        ) or get_default_naming_series("Sales Invoice")
-
-        sales_invoice = frappe.get_doc(
-            {
-                "doctype": "Sales Invoice",
-                "naming_series": naming_series,
-                "amazon_order_id": order_id,
-                "marketplace_id": amazon_order.get("MarketplaceId"),
-                "customer": customer_name,
-                "posting_date": transaction_date,
-                "due_date": today(),  # order already paid and shipped in amazon
-                "items": items,
-                "company": self.amz_setting.company,
-            }
-        )
-
-        taxes_and_charges = self.amz_setting.taxes_charges
-
-        if taxes_and_charges:
-            charges_and_fees = self.get_charges_and_fees(order_id)
-            for charge in charges_and_fees.get("charges"):
-                sales_invoice.append("taxes", charge)
-            for fee in charges_and_fees.get("fees"):
-                sales_invoice.append("taxes", fee)
-
-        sales_invoice.insert(ignore_permissions=True)
-        if submit:
-            sales_invoice.submit()
-
-        return sales_invoice.name
-
 
 def make_order_log(created_after=None):
     """Scheduled Job to run every 5 minutes or so to sync amazon orders"""

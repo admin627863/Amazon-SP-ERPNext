@@ -42,7 +42,7 @@ app_license = "MIT"
 
 # website user home page (by Role)
 # role_home_page = {
-#	"Role": "home_page"
+# 	"Role": "home_page"
 # }
 
 # Generators
@@ -56,8 +56,8 @@ app_license = "MIT"
 
 # add methods and filters to jinja environment
 # jinja = {
-#	"methods": "amazon_sp_erpnext.utils.jinja_methods",
-#	"filters": "amazon_sp_erpnext.utils.jinja_filters"
+# 	"methods": "amazon_sp_erpnext.utils.jinja_methods",
+# 	"filters": "amazon_sp_erpnext.utils.jinja_filters"
 # }
 
 # Installation
@@ -65,6 +65,7 @@ app_license = "MIT"
 
 # before_install = "amazon_sp_erpnext.install.before_install"
 # after_install = "amazon_sp_erpnext.install.after_install"
+after_migrate = "amazon_sp_erpnext.install.after_migrate"
 
 # Uninstallation
 # ------------
@@ -83,11 +84,11 @@ app_license = "MIT"
 # Permissions evaluated in scripted ways
 
 # permission_query_conditions = {
-#	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
+# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
 # }
 #
 # has_permission = {
-#	"Event": "frappe.desk.doctype.event.event.has_permission",
+# 	"Event": "frappe.desk.doctype.event.event.has_permission",
 # }
 
 # DocType Class
@@ -95,7 +96,7 @@ app_license = "MIT"
 # Override standard doctype classes
 
 # override_doctype_class = {
-#	"ToDo": "custom_app.overrides.CustomToDo"
+# 	"ToDo": "custom_app.overrides.CustomToDo"
 # }
 
 # Document Events
@@ -103,32 +104,32 @@ app_license = "MIT"
 # Hook on document methods and events
 
 # doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
+# 	"*": {
+# 		"on_update": "method",
+# 		"on_cancel": "method",
+# 		"on_trash": "method"
+# 	}
 # }
 
 # Scheduled Tasks
 # ---------------
 
 # scheduler_events = {
-#	"all": [
-#		"amazon_sp_erpnext.tasks.all"
-#	],
-#	"daily": [
-#		"amazon_sp_erpnext.tasks.daily"
-#	],
-#	"hourly": [
-#		"amazon_sp_erpnext.tasks.hourly"
-#	],
-#	"weekly": [
-#		"amazon_sp_erpnext.tasks.weekly"
-#	],
-#	"monthly": [
-#		"amazon_sp_erpnext.tasks.monthly"
-#	],
+# 	"all": [
+# 		"amazon_sp_erpnext.tasks.all"
+# 	],
+# 	"daily": [
+# 		"amazon_sp_erpnext.tasks.daily"
+# 	],
+# 	"hourly": [
+# 		"amazon_sp_erpnext.tasks.hourly"
+# 	],
+# 	"weekly": [
+# 		"amazon_sp_erpnext.tasks.weekly"
+# 	],
+# 	"monthly": [
+# 		"amazon_sp_erpnext.tasks.monthly"
+# 	],
 # }
 
 # Testing
@@ -140,14 +141,14 @@ app_license = "MIT"
 # ------------------------------
 #
 # override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "amazon_sp_erpnext.event.get_events"
+# 	"frappe.desk.doctype.event.event.get_events": "amazon_sp_erpnext.event.get_events"
 # }
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 # override_doctype_dashboards = {
-#	"Task": "amazon_sp_erpnext.task.get_dashboard_data"
+# 	"Task": "amazon_sp_erpnext.task.get_dashboard_data"
 # }
 
 # exempt linked doctypes from being automatically cancelled
@@ -159,29 +160,29 @@ app_license = "MIT"
 # --------------------
 
 # user_data_fields = [
-#	{
-#		"doctype": "{doctype_1}",
-#		"filter_by": "{filter_by}",
-#		"redact_fields": ["{field_1}", "{field_2}"],
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_2}",
-#		"filter_by": "{filter_by}",
-#		"partial": 1,
-#	},
-#	{
-#		"doctype": "{doctype_3}",
-#		"strict": False,
-#	},
-#	{
-#		"doctype": "{doctype_4}"
-#	}
+# 	{
+# 		"doctype": "{doctype_1}",
+# 		"filter_by": "{filter_by}",
+# 		"redact_fields": ["{field_1}", "{field_2}"],
+# 		"partial": 1,
+# 	},
+# 	{
+# 		"doctype": "{doctype_2}",
+# 		"filter_by": "{filter_by}",
+# 		"partial": 1,
+# 	},
+# 	{
+# 		"doctype": "{doctype_3}",
+# 		"strict": False,
+# 	},
+# 	{
+# 		"doctype": "{doctype_4}"
+# 	}
 # ]
 
 # Authentication and authorization
 # --------------------------------
 
 # auth_hooks = [
-#	"amazon_sp_erpnext.auth.validate"
+# 	"amazon_sp_erpnext.auth.validate"
 # ]

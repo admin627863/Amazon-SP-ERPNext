@@ -8,6 +8,7 @@
   "field_order": [
     "section_break_3",
     "after_datetime",
+    "till_datetime",
     "inventory_ledger",
     "after_date",
     "taxes_charges",
@@ -336,13 +337,18 @@
       "label": "After DateTime"
     },
     {
+      "fieldname": "till_datetime",
+      "fieldtype": "Datetime",
+      "label": "Till DateTime"
+    },
+    {
       "fieldname": "inventory_ledger",
       "fieldtype": "Attach",
       "label": "Inventory Ledger"
     }
   ],
   "links": [],
-  "modified": "2022-10-12 09:55:18.809744",
+  "modified": "2022-10-17 09:55:18.809744",
   "modified_by": "Administrator",
   "module": "Amazon SP ERPNext",
   "name": "Amazon SP Settings",
