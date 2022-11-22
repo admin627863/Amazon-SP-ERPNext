@@ -86,7 +86,5 @@ def oauth_redirect(sp_api_website_workflow_state=None):
     frappe.db.commit()
 
     frappe.respond_as_web_page(
-        _("Authorization complete"),
-        _("Authorized successfully. Thank you."),
-        indicator_color="green",
+        _("Authorization complete"), _("Authorized successfully. Thank you.")
     )
