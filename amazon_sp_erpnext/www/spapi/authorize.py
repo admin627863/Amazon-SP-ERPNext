@@ -69,13 +69,13 @@ def oauth_redirect(sp_api_website_workflow_state=None):
             "grant_type": "authorization_code",
             "code": args.spapi_oauth_code,
             "client_id": sp_api_settings.client_id,
-            "client_secret": frappe.conf.client_secret,
+            "client_secret": sp_api_settings.client_secret,
         },
     )
 
     args = response.json()
 
-    # frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
+    frappe.log_error(title="Amazon Oauth Response", message=json.dumps(args))
 
     frappe.db.set_value(
         "Amazon SP Settings",
