@@ -32,10 +32,11 @@ class AmazonSPSettings(Document):
         validate_amazon_sp_api_credentials(
             iam_arn=self.get("iam_arn"),
             client_id=self.get("client_id"),
-            client_secret=self.get_password("client_secret"),
+            # client_secret=self.get_password("client_secret"),
+            client_secret=self.get("client_secret"),
             refresh_token=self.get("refresh_token"),
             aws_access_key=self.get("aws_access_key"),
-            aws_secret_key=self.get_password("aws_secret_key"),
+            aws_secret_key=self.get("aws_secret_key"),
             country=self.get("country"),
         )
 
@@ -57,9 +58,9 @@ class AmazonSPSettings(Document):
     def get_credentials(self):
         return {
             "lwa_app_id": self.client_id,
-            "lwa_client_secret": self.get_password("client_secret"),
+            "lwa_client_secret": self.get("client_secret"),
             "aws_access_key": self.aws_access_key,
-            "aws_secret_key": self.get_password("aws_secret_key"),
+            "aws_secret_key": self.get("aws_secret_key"),
             "role_arn": self.iam_arn,
             "refresh_token": self.refresh_token,
         }

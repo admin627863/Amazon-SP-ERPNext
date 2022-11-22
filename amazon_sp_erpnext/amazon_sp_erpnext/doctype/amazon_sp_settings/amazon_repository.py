@@ -18,7 +18,8 @@ class AmazonRepository:
         self.instance_params = dict(
             iam_arn=self.amz_setting.iam_arn,
             client_id=self.amz_setting.client_id,
-            client_secret=self.amz_setting.get_password("client_secret"),
+            client_secret=self.amz_setting.client_secret,
+            # client_secret=self.amz_setting.get_password("client_secret"),
             refresh_token=self.amz_setting.refresh_token,
             aws_access_key=self.amz_setting.aws_access_key,
             aws_secret_key=self.amz_setting.get_password("aws_secret_key"),
