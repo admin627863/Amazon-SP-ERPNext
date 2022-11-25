@@ -12,8 +12,10 @@
   "erpnext_item_field",
   "ship_sb",
   "shipping_item",
+  "in_state_tax_category",
   "cb_2",
-  "amazon_customer_for_b2c"
+  "amazon_customer_for_b2c",
+  "out_state_tax_category"
  ],
  "fields": [
   {
@@ -63,12 +65,26 @@
    "fieldtype": "Link",
    "label": "Amazon Customer for B2C",
    "options": "Customer"
+  },
+  {
+   "fieldname": "in_state_tax_category",
+   "fieldtype": "Link",
+   "label": "In State Tax Category",
+   "options": "Tax Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "out_state_tax_category",
+   "fieldtype": "Link",
+   "label": "Out State Tax Category",
+   "options": "Tax Category",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2022-10-12 14:23:48.145443",
+ "modified": "2022-11-25 09:17:44.957763",
  "modified_by": "Administrator",
  "module": "Amazon SP ERPNext",
  "name": "Amazon SP Common Settings",
