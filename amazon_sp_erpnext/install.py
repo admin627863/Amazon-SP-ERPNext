@@ -34,21 +34,6 @@ def after_migrate(**args):
                 https://forestshipping.com/amazon-fulfillment-center-address-in-india""",
             ),
         ],
-        "Item Tax Template": [
-            dict(
-                fieldtype="Select",
-                fieldname="amazon_tax_type_cf",
-                label="Amazon Tax Type",
-                insert_after="disabled",
-                options="\nIn State\nOut State",
-            ),
-            dict(
-                fieldtype="Float",
-                fieldname="amazon_tax_rate_cf",
-                label="Amazon Tax Rate",
-                insert_after="amazon_tax_type_cf",
-            ),
-        ],
     }
 
     for d in custom_fields:
