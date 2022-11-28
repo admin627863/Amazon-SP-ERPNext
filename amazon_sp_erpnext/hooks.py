@@ -30,7 +30,7 @@ app_license = "MIT"
 
 # include js in doctype views
 # doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Sales Invoice": "public/js/sales_invoice_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
@@ -114,23 +114,28 @@ after_migrate = "amazon_sp_erpnext.install.after_migrate"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"amazon_sp_erpnext.tasks.all"
-# 	],
-# 	"daily": [
-# 		"amazon_sp_erpnext.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"amazon_sp_erpnext.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"amazon_sp_erpnext.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"amazon_sp_erpnext.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+    "all": [
+        "amazon_sp_erpnext.amazon_sp_erpnext.doctype.amazon_on_demand_report.amazon_on_demand_report.get_report_scheduled"
+    ],
+    "cron": {
+        "0 6-22/3 * * *": [
+            "amazon_sp_erpnext.amazon_sp_erpnext.doctype.amazon_on_demand_report.amazon_on_demand_report.create_amazon_reports_scheduled"
+        ],
+    }
+    # 	"daily": [
+    # 		"amazon_sp_erpnext.tasks.daily"
+    # 	],
+    # 	"hourly": [
+    # 		"amazon_sp_erpnext.tasks.hourly"
+    # 	],
+    # 	"weekly": [
+    # 		"amazon_sp_erpnext.tasks.weekly"
+    # 	],
+    # 	"monthly": [
+    # 		"amazon_sp_erpnext.tasks.monthly"
+    # 	],
+}
 
 # Testing
 # -------

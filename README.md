@@ -11,8 +11,12 @@ Use private application, with refresh token generated from portal. No need for O
 #### Fetch Orders
 
 - 2 reports from amazon used to sync orders
-  GET_GST_MTR_B2B_CUSTOM
-  GET_GST_MTR_B2C_CUSTOM
+
+https://developer-docs.amazon.com/sp-api/docs/report-type-values#tax-reports
+
+GET_GST_MTR_B2B_CUSTOM
+GET_GST_MTR_B2C_CUSTOM
+GST_MTR_STOCK_TRANSFER_REPORT
 
 - Transaction Type = Shipping will be handled. (Could think of handling Cancelled in Phase 2)
 - Item and Warehouse with FC mapping must exist. If warehouse not found or item not found will mark as Error in amazon order log

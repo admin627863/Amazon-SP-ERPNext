@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe.utils import now_datetime, add_to_date
 from sp_api.api import Reports, Sales
 from sp_api.base import Marketplaces, ReportType, ProcessingStatus, Granularity
 import time
@@ -10,15 +11,21 @@ from datetime import datetime
 
 
 @frappe.whitelist()
-def fetch_report(report_type, amz_settings_name):
+def fetch_report(report_type, amz_settings_name, start_time=None, end_time=None):
     settings = frappe.get_doc("Amazon SP Settings", amz_settings_name)
     credentials = settings.get_credentials()
     res = Reports(credentials=credentials, marketplace=Marketplaces.IN)
 
+    if not start_time:
+        start_time = add_to_date(now_datetime(), hours=-1).utcnow()
+
+    if not end_time:
+        end_time = now_datetime().utcnow()
+
     data = res.create_report(
         reportType=report_type,
-        dataStartTime=settings.after_datetime,  # , "2022-10-06T20:11:24.000Z",
-        dataEndTime=settings.till_datetime,  # "2022-10-10T03:56:02.244Z",
+        dataStartTime=start_time,  # , "2022-10-06T20:11:24.000Z",
+        dataEndTime=end_time,  # "2022-10-10T03:56:02.244Z",
         # reportOptions={
         #     "aggregateByLocation": "FC",
         #     "aggregatedByTimePeriod": "MONTHLY",

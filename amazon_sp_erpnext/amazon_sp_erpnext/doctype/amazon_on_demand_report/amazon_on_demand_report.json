@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2022-11-27 21:49:04.471938",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "amazon_settings",
+  "status",
+  "time_taken",
+  "is_processed",
+  "column_break_5",
+  "report_type",
+  "start_time",
+  "end_time",
+  "report_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "report_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Report Type",
+   "options": "\nGET_GST_MTR_B2B_CUSTOM\nGET_GST_MTR_B2C_CUSTOM\nGST_MTR_STOCK_TRANSFER_REPORT"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Status"
+  },
+  {
+   "fieldname": "time_taken",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Time Taken"
+  },
+  {
+   "fieldname": "amazon_settings",
+   "fieldtype": "Link",
+   "label": "Amazon Settings",
+   "options": "Amazon SP Settings"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Data Start Time"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Data End Time"
+  },
+  {
+   "fieldname": "report_id",
+   "fieldtype": "Data",
+   "label": "Report Id"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_processed",
+   "fieldtype": "Check",
+   "label": "Is Processed"
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2022-11-28 12:17:42.566405",
+ "modified_by": "Administrator",
+ "module": "Amazon SP ERPNext",
+ "name": "Amazon On Demand Report",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
