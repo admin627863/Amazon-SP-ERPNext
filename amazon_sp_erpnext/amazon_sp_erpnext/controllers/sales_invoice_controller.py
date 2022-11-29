@@ -15,9 +15,19 @@ from erpnext.controllers.accounts_controller import (
     add_taxes_from_tax_template,
 )
 
+from erpnext.stock.get_item_details import get_item_tax_map
+from india_compliance.gst_india.constants import STATE_NUMBERS
+
 
 def amz_datetime_to_date(amz_date):
     return dateutil.parser.parse(amz_date).strftime("%Y-%m-%d")
+
+
+def get_state_name(state_name):
+    gst_state = [
+        x for x in STATE_NUMBERS if x.lower() == state_name.lower().replace("&", "and")
+    ]
+    return gst_state and gst_state[0]
 
 
 def amz_datetime_to_time(amz_date):
@@ -204,7 +214,64 @@ def get_mtr_df(file_name=None, amz_setting=None):
         # sep="\t",
     )
     df = df.replace({np.NAN: None})
+    # df = df[df[mcols.ORDER_ID] == ""]
     return df[(df[mcols.TRANSACTION_TYPE] == "Shipment") & (df[mcols.QUANTITY] > 0)]
+
+
+def get_b2b_details(order, args):
+    # if is_b2b:
+    #     customer_name, contact_name = make_b2b_customer_contact(
+    #         amz_setting, order
+    #     )
+
+    args.update(
+        {
+            "tax_id": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
+            "customer_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
+            "billing_address_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
+            "customer_name": "",
+            # "contact_name":"",
+        }
+    )
+
+
+def get_b2c_details(order, args):
+    # customer address, shipping address
+    args["customer"] = get_b2c_customer()
+    # company_address From Address doctype : Based on Seller GSTIN
+    for d in frappe.db.sql(
+        """
+    select 
+        ta.name
+    from `tabDynamic Link` tdl
+    inner join tabAddress ta on ta.name = tdl.parent 
+    where tdl.parenttype = 'Address' and tdl.link_doctype = 'Customer' 
+    and tdl.link_name = %s and ta.gst_state = %s
+    """,
+        (args.get("customer"), order.get(mcols.SHIP_TO_STATE)),
+    ):
+        args["customer_address"] = d[0]
+
+    if not args.get("customer_address"):
+        # make address
+        title = "{}-{}".format(args.get("customer"), args.get("company_gstin"))
+        address = frappe.get_doc(
+            {
+                "doctype": "Address",
+                "address_type": "Shipping",
+                "address_title": title,
+                "address_line1": title,
+                "city": order.get(mcols.SHIP_TO_CITY),
+                "state": get_state_name(order.get(mcols.SHIP_TO_STATE)),
+                "pincode": order.get(mcols.SHIP_TO_POSTAL_CODE),
+                "country": "INDIA",
+                "links": [
+                    {"link_doctype": "Customer", "link_name": args.get("customer")}
+                ],
+            }
+        ).insert()
+        args["customer_address"] = address.name
+        args["shipping_address_name"] = address.name
 
 
 def process_mtr_file(file_name=None, amz_setting=None, submit=True):
@@ -217,14 +284,11 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
 
     is_b2b = mcols.CUSTOMER_BILL_TO_GSTID in df.columns
 
-    if not is_b2b:
-        contacts = df[mcols.ORDER_ID].drop_duplicates().to_list()
-        # make_contacts(contacts)
+    # if not is_b2b:
+    #     contacts = df[mcols.ORDER_ID].drop_duplicates().to_list()
+    # make_contacts(contacts)
 
-    make_address(df)
-
-    customer_name = get_b2c_customer()
-    contact_name = ""
+    # make_address(df)
 
     for order_id in set(df[mcols.ORDER_ID].values.tolist()):
         print("\n\ncreating sales invoice: %s" % (order_id))
@@ -240,11 +304,6 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
             if frappe.db.exists("Sales Invoice", {"amazon_order_id_cf": order_id}):
                 continue
 
-            if is_b2b:
-                customer_name, contact_name = make_b2b_customer_contact(
-                    amz_setting, order
-                )
-
             posting_date = amz_datetime_to_date(order.get(mcols.INVOICE_DATE))
             warehouse = frappe.db.get_value(
                 "Warehouse",
@@ -256,25 +315,15 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
                 "naming_series": get_naming_series(amz_setting),
                 "company": amz_setting.company,
                 "posting_date": posting_date,
+                "posting_time": amz_datetime_to_time(order.get(mcols.INVOICE_DATE)),
                 "amazon_order_id_cf": order_id,
                 "debit_to": amz_setting.default_receivable_account,
-                "customer": customer_name,
-                "tax_id": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
                 "company_tax_id": order.get(mcols.SELLER_GSTIN),
-                "posting_time": amz_datetime_to_time(order.get(mcols.INVOICE_DATE)),
                 "due_date": posting_date,  # order already paid and shipped in amazon
-                # "return_against":None,
                 "cost_center": amz_setting.default_cost_center,
                 "po_no": order.get(mcols.ORDER_ID),
                 "po_date": order.get(mcols.ORDER_DATE),
-                "billing_address_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
-                # "customer_address": order.get(mcols.BUYER_NAME),
-                # "contact_person": contact_name,
-                # "shipping_address_name": order.get(mcols.BUYER_NAME),
-                "customer_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
-                "place_of_supply": order.get(mcols.SHIP_TO_STATE),
                 "territory": amz_setting.territory,
-                # "company_address": "",  # From Address doctype : Based on Seller GSTIN
                 "company_gstin": order.get(mcols.SELLER_GSTIN),
                 "port_of_loading": "",
                 "set_warehouse": warehouse,
@@ -283,7 +332,36 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
                 "gst_category": amz_common.get_gst_category(order),
                 "irn": order.get("IRN_NUMBER"),
                 "items": [],
+                # "contact_person": contact_name,
+                # "return_against":None,
             }
+
+            if is_b2b:
+                get_b2b_details(order, args)
+            else:
+                get_b2c_details(order, args)
+
+            # set address for india_compliance validation
+            args["place_of_supply"] = frappe.db.get_value(
+                "Address",
+                {"gst_state": mcols.SHIP_TO_STATE},
+                fieldname="gst_state_number",
+            )
+
+            # company_address From Address doctype : Based on Seller GSTIN
+            for dr in frappe.db.sql(
+                """
+            select 
+            	ta.name
+            from `tabDynamic Link` tdl
+            inner join tabAddress ta on ta.name = tdl.parent 
+            where tdl.parenttype = 'Address' and tdl.link_doctype = 'Company' 
+            and tdl.link_name = %s and ta.gst_state_number = %s
+            """,
+                (args.get("company"), args.get("company_gstin")[:2]),
+            ):
+                args["company_address"] = dr[0]
+
             sales_invoice = frappe.get_doc(args)
 
             for d in lines:
@@ -323,9 +401,6 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
                         "item_tax_template": amz_common.get_item_tax_template(order),
                     },
                 )
-
-            sales_invoice.transaction_date = sales_invoice.posting_date
-            from erpnext.stock.get_item_details import get_item_tax_map
 
             for d in sales_invoice.items:
                 d.item_tax_rate = get_item_tax_map(
