@@ -132,29 +132,37 @@ def get_report_scheduled():
         # frappe.db.commit()
 
 
-def process_mtr_report_scheduled():
+@frappe.whitelist()
+def process_mtr_report_scheduled(name=None, amazon_settings=None):
     """runs in a cron to process reports that are DONE"""
-    for d in frappe.get_all(
-        "Amazon On Demand Report",
-        filters={
-            "status": ProcessingStatus.DONE,
-            "is_processed": 0,
-        },
-        fields=["name", "amazon_settings"],
-    ):
+
+    def _process_aod_report(name, amazon_settings):
         for f in frappe.db.get_all(
             "File",
             filters={
                 "attached_to_doctype": "Amazon On Demand Report",
-                "attached_to_name": ("in", d.name),
+                "attached_to_name": ("in", name),
             },
             fields=["file_url", "name"],
             limit_page_length=1,
         ):
+            frappe.msgprint("Enqueued job for processing file.")
+            process_mtr_file(f.name, amazon_settings, submit=False)
+            frappe.db.set_value("Amazon On Demand Report", name, "is_processed", 1)
+            frappe.db.commit()
 
-            process_mtr_file(f.name, d.amazon_settings, submit=False)
-            frappe.db.set_value("Amazon On Demand Report", d.name, "is_processed", 1)
-        frappe.db.commit()
+    if name and amazon_settings:
+        _process_aod_report(name, amazon_settings)
+    else:
+        for d in frappe.get_all(
+            "Amazon On Demand Report",
+            filters={
+                "status": ProcessingStatus.DONE,
+                "is_processed": 0,
+            },
+            fields=["name", "amazon_settings"],
+        ):
+            _process_aod_report(d.name, d.amazon_settings)
 
 
 def create_amazon_reports_scheduled():
