@@ -196,10 +196,10 @@ def get_mtr_df(file_name=None, amz_setting=None):
             )
             with zipfile.ZipFile(_file) as z:
                 for file in z.filelist:
-                    content = str(z.read(file.filename))
+                    content = z.read(file.filename)
 
     df = pd.read_csv(
-        io.StringIO(content),
+        io.StringIO(cstr(content)),
         # sep="\t",
     )
     return df[(df[mcols.TRANSACTION_TYPE] == "Shipment") & (df[mcols.QUANTITY] > 0)]
@@ -207,6 +207,9 @@ def get_mtr_df(file_name=None, amz_setting=None):
 
 def process_mtr_file(file_name=None, amz_setting=None, submit=True):
     df = get_mtr_df(file_name, amz_setting)
+    if not len(df):
+        frappe.throw("No Order lines to import in file.")
+
     amz_setting = frappe.get_cached_doc("Amazon SP Settings", amz_setting)
     amz_common = frappe.get_single("Amazon SP Common Settings")
 
@@ -225,7 +228,7 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
         print("\n\ncreating sales invoice: %s" % (order_id))
         df_copy = df[df[mcols.ORDER_ID] == order_id]
         if not len(df_copy):
-            frappe.throw("No Order lines to import in file.")
+            return
 
         lines = df_copy.to_dict("records")
         try:
@@ -233,7 +236,7 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
             order_id = order.get(mcols.ORDER_ID)
             # check for duplicate
             if frappe.db.exists("Sales Invoice", {"amazon_order_id_cf": order_id}):
-                return
+                continue
 
             if is_b2b:
                 customer_name, contact_name = make_b2b_customer_contact(
