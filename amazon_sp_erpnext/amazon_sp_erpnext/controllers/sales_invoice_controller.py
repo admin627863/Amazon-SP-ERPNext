@@ -3,6 +3,7 @@
 
 import frappe
 import pandas as pd
+import numpy as np
 import io, os, json
 import dateutil
 from frappe.model.naming import get_default_naming_series
@@ -202,6 +203,7 @@ def get_mtr_df(file_name=None, amz_setting=None):
         io.StringIO(cstr(content)),
         # sep="\t",
     )
+    df = df.replace({np.NAN: None})
     return df[(df[mcols.TRANSACTION_TYPE] == "Shipment") & (df[mcols.QUANTITY] > 0)]
 
 
@@ -309,8 +311,8 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
                         "item_name": item_details.item_name,
                         "description": item_details.description,
                         "gst_hsn_code": d.get(mcols.HSN_SAC),
-                        "rate": 0,
-                        "net_rate": 0,
+                        "rate": d.get(mcols.TAX_EXCLUSIVE_GROSS),
+                        "net_rate": d.get(mcols.TAX_EXCLUSIVE_GROSS),
                         "qty": d.get(mcols.QUANTITY) or 0,
                         "delivered_qty": d.get(mcols.QUANTITY) or 0,
                         "stock_uom": item_details.stock_uom,
