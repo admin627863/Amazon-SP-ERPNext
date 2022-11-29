@@ -56,126 +56,36 @@ def get_warehouse(fc_name, company):
     return warehouse and warehouse[0][0] or None
 
 
-def make_contacts(data):
-    # create contacts for B2C customers
-    amazon_customer_for_b2c = get_b2c_customer()
-
-    contacts = frappe.db.get_all(
-        "Dynamic Link",
-        filters={
-            "link_doctype": "Customer",
-            "link_name": amazon_customer_for_b2c,
-            "parenttype": "Contact",
-        },
-        pluck="parent",
-    )
-
-    for d in data:
-        if f"Buyer-{d}-{amazon_customer_for_b2c}" in contacts:
-            return
-        print("creating: ", d)
-        frappe.get_doc(
-            {
-                "doctype": "Contact",
-                "first_name": f"Buyer-{d}",
-                "links": [
-                    {
-                        "doctype": "Dynamic Link",
-                        "link_doctype": "Customer",
-                        "link_name": amazon_customer_for_b2c,
-                    },
-                ],
-            }
-        ).insert()
-
-
-def make_address(df):
-    nowtime = frappe.utils.now()
-    df_copy = (
-        df[
-            [
-                "Order Id",
-                "Ship To City",
-                "Ship To State",
-                "Ship To Country",
-                "Ship To Postal Code",
-            ]
-        ]
-        .copy()
-        .rename(
-            columns={
-                "Order Id": "order-id",
-                "Ship To City": "city",
-                "Ship To State": "state",
-                "Ship To Country": "country",
-                "Ship To Postal Code": "pincode",
-            }
+def get_zip_content(content, file_doc):
+    # read signature to check if zip file
+    hex_signature = " ".join(["{:02X}".format(byte) for byte in content[:4]])
+    if hex_signature in ["50 4B 03 04", "50 4B 05 06", "50 4B 07 07"]:
+        _file = "{}{}".format(
+            os.path.abspath(frappe.get_site_path()), file_doc.file_url
         )
+        with zipfile.ZipFile(_file) as z:
+            for file in z.filelist:
+                content = z.read(file.filename)
+    return content
+
+
+def get_b2b_customer(order, amz_setting):
+    customer = "{}-{}".format(
+        order.get("Buyer Name"), order.get(mcols.CUSTOMER_BILL_TO_GSTID)
     )
-
-    df_copy.drop_duplicates(inplace=True, ignore_index=True)
-    df_copy = df_copy.assign(
-        name=df_copy["order-id"] + " - Shipping",
-        creation=nowtime,
-        modified=nowtime,
-        modified_by="Administrator",
-        address_type="Shipping",
-        address_line1="Not Provided",
-        country=lambda x: "India" if x["country"].str == "IN" else x["country"],
-    )
-
-    fields = [
-        "name",
-        "creation",
-        "modified",
-        "modified_by",
-        "address_type",
-        "address_line1",
-        "city",
-        "state",
-        "pincode",
-        "country",
-    ]
-
-    data = df_copy[fields].values.tolist()
-    frappe.db.bulk_insert(
-        "Address",
-        fields=fields,
-        values=data,
-        ignore_duplicates=True,
-    )
-
-    frappe.db.commit()
-
-
-def make_b2b_customer_contact(amz_setting, args={}):
+    if frappe.db.exists("Customer", customer):
+        return customer
     # create B2B Customer
-
-    customer = frappe.get_doc(
+    doc = frappe.get_doc(
         {
             "doctype": "Customer",
-            "customer_name": args.get("Buyer Name"),
+            "customer_name": customer,
             "customer_group": amz_setting.customer_group,
             "territory": amz_setting.territory,
             "customer_type": amz_setting.customer_type,
         }
-    )
-    customer.save()
-
-    contact = frappe.get_doc(
-        {
-            "doctype": "Contact",
-            "first_name": args.get("Buyer Name"),
-            "links": [
-                {
-                    "doctype": "Dynamic Link",
-                    "link_doctype": "Customer",
-                    "link_name": customer.name,
-                },
-            ],
-        }
     ).insert()
-    return customer.name, contact.name
+    return doc.name
 
 
 def get_mtr_df(file_name=None, amz_setting=None):
@@ -198,38 +108,24 @@ def get_mtr_df(file_name=None, amz_setting=None):
     content = file_doc.get_content()
 
     if not isinstance(content, str):
-        # read signature to check if zip file
-
-        hex_signature = " ".join(["{:02X}".format(byte) for byte in content[:4]])
-        if hex_signature in ["50 4B 03 04", "50 4B 05 06", "50 4B 07 07"]:
-            _file = "{}{}".format(
-                os.path.abspath(frappe.get_site_path()), file_doc.file_url
-            )
-            with zipfile.ZipFile(_file) as z:
-                for file in z.filelist:
-                    content = z.read(file.filename)
+        content = get_zip_content(content, file_doc)
 
     df = pd.read_csv(
-        io.StringIO(cstr(content)),
-        # sep="\t",
+        io.StringIO(cstr(content)),  # sep="\t",
     )
+
     df = df.replace({np.NAN: None})
     # df = df[df[mcols.ORDER_ID] == ""]
     return df[(df[mcols.TRANSACTION_TYPE] == "Shipment") & (df[mcols.QUANTITY] > 0)]
 
 
-def get_b2b_details(order, args):
-    # if is_b2b:
-    #     customer_name, contact_name = make_b2b_customer_contact(
-    #         amz_setting, order
-    #     )
-
+def get_b2b_details(order, args, amz_setting):
     args.update(
         {
             "tax_id": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
             "customer_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
             "billing_address_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
-            "customer_name": "",
+            "customer": get_b2b_customer(order, amz_setting),
             # "contact_name":"",
         }
     )
@@ -284,12 +180,6 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
 
     is_b2b = mcols.CUSTOMER_BILL_TO_GSTID in df.columns
 
-    # if not is_b2b:
-    #     contacts = df[mcols.ORDER_ID].drop_duplicates().to_list()
-    # make_contacts(contacts)
-
-    # make_address(df)
-
     for order_id in set(df[mcols.ORDER_ID].values.tolist()):
         print("\n\ncreating sales invoice: %s" % (order_id))
         df_copy = df[df[mcols.ORDER_ID] == order_id]
@@ -337,7 +227,7 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
             }
 
             if is_b2b:
-                get_b2b_details(order, args)
+                get_b2b_details(order, args, amz_setting)
             else:
                 get_b2c_details(order, args)
 
@@ -437,3 +327,95 @@ def make_log(order_lines, order_id, sales_invoice=None, error=None):
                 "amazon_order_json": json.dumps(d),
             }
         ).insert()
+
+
+# def make_contacts(data):
+#     # create contacts for B2C customers
+#     amazon_customer_for_b2c = get_b2c_customer()
+
+#     contacts = frappe.db.get_all(
+#         "Dynamic Link",
+#         filters={
+#             "link_doctype": "Customer",
+#             "link_name": amazon_customer_for_b2c,
+#             "parenttype": "Contact",
+#         },
+#         pluck="parent",
+#     )
+
+#     for d in data:
+#         if f"Buyer-{d}-{amazon_customer_for_b2c}" in contacts:
+#             return
+#         print("creating: ", d)
+#         frappe.get_doc(
+#             {
+#                 "doctype": "Contact",
+#                 "first_name": f"Buyer-{d}",
+#                 "links": [
+#                     {
+#                         "doctype": "Dynamic Link",
+#                         "link_doctype": "Customer",
+#                         "link_name": amazon_customer_for_b2c,
+#                     },
+#                 ],
+#             }
+#         ).insert()
+
+
+# def make_address(df):
+#     nowtime = frappe.utils.now()
+#     df_copy = (
+#         df[
+#             [
+#                 "Order Id",
+#                 "Ship To City",
+#                 "Ship To State",
+#                 "Ship To Country",
+#                 "Ship To Postal Code",
+#             ]
+#         ]
+#         .copy()
+#         .rename(
+#             columns={
+#                 "Order Id": "order-id",
+#                 "Ship To City": "city",
+#                 "Ship To State": "state",
+#                 "Ship To Country": "country",
+#                 "Ship To Postal Code": "pincode",
+#             }
+#         )
+#     )
+
+#     df_copy.drop_duplicates(inplace=True, ignore_index=True)
+#     df_copy = df_copy.assign(
+#         name=df_copy["order-id"] + " - Shipping",
+#         creation=nowtime,
+#         modified=nowtime,
+#         modified_by="Administrator",
+#         address_type="Shipping",
+#         address_line1="Not Provided",
+#         country=lambda x: "India" if x["country"].str == "IN" else x["country"],
+#     )
+
+#     fields = [
+#         "name",
+#         "creation",
+#         "modified",
+#         "modified_by",
+#         "address_type",
+#         "address_line1",
+#         "city",
+#         "state",
+#         "pincode",
+#         "country",
+#     ]
+
+#     data = df_copy[fields].values.tolist()
+#     frappe.db.bulk_insert(
+#         "Address",
+#         fields=fields,
+#         values=data,
+#         ignore_duplicates=True,
+#     )
+
+#     frappe.db.commit()
