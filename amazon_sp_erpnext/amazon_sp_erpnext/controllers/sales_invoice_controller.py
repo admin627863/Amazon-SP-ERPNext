@@ -225,7 +225,8 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
         print("\n\ncreating sales invoice: %s" % (order_id))
         df_copy = df[df[mcols.ORDER_ID] == order_id]
         if not len(df_copy):
-            return
+            frappe.throw("No Order lines to import in file.")
+
         lines = df_copy.to_dict("records")
         try:
             order = lines[0]
