@@ -23,7 +23,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Report Type",
-   "options": "\nGET_GST_MTR_B2B_CUSTOM\nGET_GST_MTR_B2C_CUSTOM\nGST_MTR_STOCK_TRANSFER_REPORT"
+   "options": "\nGET_GST_MTR_B2B_CUSTOM\nGET_GST_MTR_B2C_CUSTOM\nGET_GST_STR_ADHOC"
   },
   {
    "fieldname": "status",
@@ -73,7 +73,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-11-28 12:17:42.566405",
+ "modified": "2022-11-28 19:20:25.843957",
  "modified_by": "Administrator",
  "module": "Amazon SP ERPNext",
  "name": "Amazon On Demand Report",

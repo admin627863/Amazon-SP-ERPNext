@@ -10,7 +10,7 @@ from frappe.utils import (
 )
 from frappe.model.document import Document
 import time
-import io, json
+import io, json, pytz
 from sp_api.api import Reports, Sales
 from sp_api.base import Marketplaces, ReportType, ProcessingStatus, Granularity
 
@@ -20,7 +20,12 @@ from amazon_sp_erpnext.amazon_sp_erpnext.controllers.sales_invoice_controller im
 
 
 def to_amz_utc(date_str):
-    return get_datetime(date_str).utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+    return (
+        get_datetime(date_str)
+        .astimezone(pytz.UTC)
+        .strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]
+        + "Z"
+    )
 
 
 class AmazonOnDemandReport(Document):
@@ -37,7 +42,7 @@ class AmazonOnDemandReport(Document):
             self.name,
             "create_report",
             queue="long",
-            timeout=3000,
+            timeout=60 * 60 * 2,
             now=True,
         )
         frappe.db.commit()

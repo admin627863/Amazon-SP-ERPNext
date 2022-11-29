@@ -3,13 +3,16 @@
 
 import frappe
 import pandas as pd
-import io, os
+import io, os, json
 import dateutil
 from frappe.model.naming import get_default_naming_series
-from frappe.utils import today
+from frappe.utils import cstr
 from amazon_sp_erpnext.amazon_sp_erpnext.controllers.mtr import MTR_COLUMNS as mcols
 import zipfile
 from frappe.utils.csvutils import read_csv_content
+from erpnext.controllers.accounts_controller import (
+    add_taxes_from_tax_template,
+)
 
 
 def amz_datetime_to_date(amz_date):
@@ -211,7 +214,7 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
 
     if not is_b2b:
         contacts = df[mcols.ORDER_ID].drop_duplicates().to_list()
-        make_contacts(contacts)
+        # make_contacts(contacts)
 
     make_address(df)
 
@@ -219,16 +222,13 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
     contact_name = ""
 
     for order_id in set(df[mcols.ORDER_ID].values.tolist()):
+        print("\n\ncreating sales invoice: %s" % (order_id))
+        df_copy = df[df[mcols.ORDER_ID] == order_id]
+        if not len(df_copy):
+            return
+        lines = df_copy.to_dict("records")
         try:
-            print("\n\ncreating sales invoice: %s" % (order_id))
-
-            df_copy = df[df[mcols.ORDER_ID] == order_id]
-            if not len(df_copy):
-                return
-
-            lines = df_copy.to_dict("records")
             order = lines[0]
-
             order_id = order.get(mcols.ORDER_ID)
             # check for duplicate
             if frappe.db.exists("Sales Invoice", {"amazon_order_id_cf": order_id}):
@@ -261,13 +261,13 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
                 "cost_center": amz_setting.default_cost_center,
                 "po_no": order.get(mcols.ORDER_ID),
                 "po_date": order.get(mcols.ORDER_DATE),
-                # "customer_address": order.get(mcols.BUYER_NAME),
                 "billing_address_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
-                "contact_person": contact_name,
-                "territory": amz_setting.territory,
+                # "customer_address": order.get(mcols.BUYER_NAME),
+                # "contact_person": contact_name,
                 # "shipping_address_name": order.get(mcols.BUYER_NAME),
                 "customer_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
                 "place_of_supply": order.get(mcols.SHIP_TO_STATE),
+                "territory": amz_setting.territory,
                 # "company_address": "",  # From Address doctype : Based on Seller GSTIN
                 "company_gstin": order.get(mcols.SELLER_GSTIN),
                 "port_of_loading": "",
@@ -318,16 +318,41 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
                     },
                 )
 
+            sales_invoice.transaction_date = sales_invoice.posting_date
+            from erpnext.stock.get_item_details import get_item_tax_map
+
+            for d in sales_invoice.items:
+                d.item_tax_rate = get_item_tax_map(
+                    sales_invoice.get("company"), d.item_tax_template, as_json=True
+                )
+                add_taxes_from_tax_template(d, sales_invoice, False)
+
             sales_invoice.insert(ignore_permissions=True)
 
             if submit:
                 sales_invoice.submit()
 
+            make_log(lines, order_id, sales_invoice.name)
             print("Created invoice: ", sales_invoice.name)
             # break
         except Exception as e:
+            make_log(lines, order_id, sales_invoice=None, error=cstr(e))
             frappe.log_error(
                 title="Error creating invoice for %s" % order_id,
                 message=frappe.get_traceback(),
             )
             print(e)
+
+
+def make_log(order_lines, order_id, sales_invoice=None, error=None):
+    for d in order_lines:
+        frappe.get_doc(
+            {
+                "doctype": "Amazon Order Log",
+                "amazon_order_id": order_id,
+                "status": error and "Error" or "Processed",
+                "sales_invoice": sales_invoice,
+                "error": error,
+                "amazon_order_json": json.dumps(d),
+            }
+        ).insert()
