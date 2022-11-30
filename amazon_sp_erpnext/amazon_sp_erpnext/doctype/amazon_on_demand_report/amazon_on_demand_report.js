@@ -14,6 +14,8 @@ frappe.ui.form.on("Amazon On Demand Report", {
               name: frm.doc.name,
               amazon_settings: frm.doc.amazon_settings,
             },
+            freeze: true,
+            freeze_message: __("Creating invoices..."),
           });
         },
         __("Action")

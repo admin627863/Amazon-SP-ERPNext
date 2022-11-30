@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 import pandas as pd
 import numpy as np
 import io, os, json
@@ -88,6 +89,38 @@ def get_b2b_customer(order, amz_setting):
     return doc.name
 
 
+def get_customer_address(customer, ship_to_state):
+    for d in frappe.db.sql(
+        """
+    select 
+        ta.name
+    from `tabDynamic Link` tdl
+    inner join tabAddress ta on ta.name = tdl.parent 
+    where tdl.parenttype = 'Address' and tdl.link_doctype = 'Customer' 
+    and tdl.link_name = %s and ta.gst_state = %s
+    """,
+        (customer, ship_to_state),
+    ):
+        return d[0]
+
+
+def make_address(customer, gstin, order):
+    title = "{}-{}".format(customer, gstin)
+    return frappe.get_doc(
+        {
+            "doctype": "Address",
+            "address_type": "Shipping",
+            "address_title": title,
+            "address_line1": title,
+            "city": order.get(mcols.SHIP_TO_CITY),
+            "state": get_state_name(order.get(mcols.SHIP_TO_STATE)),
+            "pincode": order.get(mcols.SHIP_TO_POSTAL_CODE),
+            "country": "INDIA",
+            "links": [{"link_doctype": "Customer", "link_name": customer}],
+        }
+    ).insert()
+
+
 def get_mtr_df(file_name=None, amz_setting=None):
     amz_setting = frappe.get_cached_doc("Amazon SP Settings", amz_setting)
     is_b2b, df, items = False, None, []
@@ -126,46 +159,19 @@ def get_b2b_details(order, args, amz_setting):
             "customer_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
             "billing_address_gstin": order.get(mcols.CUSTOMER_BILL_TO_GSTID),
             "customer": get_b2b_customer(order, amz_setting),
-            # "contact_name":"",
         }
     )
 
 
 def get_b2c_details(order, args):
-    # customer address, shipping address
+    # set customer, customer address, shipping address
     args["customer"] = get_b2c_customer()
-    # company_address From Address doctype : Based on Seller GSTIN
-    for d in frappe.db.sql(
-        """
-    select 
-        ta.name
-    from `tabDynamic Link` tdl
-    inner join tabAddress ta on ta.name = tdl.parent 
-    where tdl.parenttype = 'Address' and tdl.link_doctype = 'Customer' 
-    and tdl.link_name = %s and ta.gst_state = %s
-    """,
-        (args.get("customer"), order.get(mcols.SHIP_TO_STATE)),
-    ):
-        args["customer_address"] = d[0]
+    args["customer_address"] = get_customer_address(
+        args.get("customer"), order.get(mcols.SHIP_TO_STATE)
+    )
 
     if not args.get("customer_address"):
-        # make address
-        title = "{}-{}".format(args.get("customer"), args.get("company_gstin"))
-        address = frappe.get_doc(
-            {
-                "doctype": "Address",
-                "address_type": "Shipping",
-                "address_title": title,
-                "address_line1": title,
-                "city": order.get(mcols.SHIP_TO_CITY),
-                "state": get_state_name(order.get(mcols.SHIP_TO_STATE)),
-                "pincode": order.get(mcols.SHIP_TO_POSTAL_CODE),
-                "country": "INDIA",
-                "links": [
-                    {"link_doctype": "Customer", "link_name": args.get("customer")}
-                ],
-            }
-        ).insert()
+        address = make_address(args.get("customer"), args.get("company_gstin"), order)
         args["customer_address"] = address.name
         args["shipping_address_name"] = address.name
 
@@ -180,8 +186,10 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
 
     is_b2b = mcols.CUSTOMER_BILL_TO_GSTID in df.columns
 
+    count, total = 0, len(df)
     for order_id in set(df[mcols.ORDER_ID].values.tolist()):
         print("\n\ncreating sales invoice: %s" % (order_id))
+
         df_copy = df[df[mcols.ORDER_ID] == order_id]
         if not len(df_copy):
             return
@@ -242,7 +250,7 @@ def process_mtr_file(file_name=None, amz_setting=None, submit=True):
             for dr in frappe.db.sql(
                 """
             select 
-            	ta.name
+                ta.name
             from `tabDynamic Link` tdl
             inner join tabAddress ta on ta.name = tdl.parent 
             where tdl.parenttype = 'Address' and tdl.link_doctype = 'Company' 

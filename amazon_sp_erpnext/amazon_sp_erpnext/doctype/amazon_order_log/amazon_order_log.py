@@ -10,13 +10,4 @@ import json
 
 
 class AmazonOrderLog(Document):
-    def on_update(self):
-        if not self.status == "Error" and not self.sales_invoice:
-            amazon_repository = AmazonRepositoryExtn("CARMEL ORGANICS PRIVATE LIMITED")
-            si_doc = amazon_repository.create_sales_invoice(
-                json.loads(self.amazon_order_json), submit=False
-            )
-            self.db_set("status", "Processed")
-            self.db_set("sales_invoice", si_doc)
-
-            print("Created sales Invoice %s" % si_doc)
+    pass
